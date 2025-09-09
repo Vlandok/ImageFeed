@@ -18,6 +18,7 @@
 		868507D12E6F7C000098BC85 /* URLSession+data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868507D02E6F7BFE0098BC85 /* URLSession+data.swift */; };
 		868507D32E6F7D650098BC85 /* OAuthTokenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868507D22E6F7D630098BC85 /* OAuthTokenResponse.swift */; };
 		86CBEB8B2E6DF4F700CEB7A4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CBEB8A2E6DF4F400CEB7A4 /* Constants.swift */; };
+		86D58C482E7021C3001AADDE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86D58C472E7021C3001AADDE /* WebKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		868507D02E6F7BFE0098BC85 /* URLSession+data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSession+data.swift"; sourceTree = "<group>"; };
 		868507D22E6F7D630098BC85 /* OAuthTokenResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthTokenResponse.swift; sourceTree = "<group>"; };
 		86CBEB8A2E6DF4F400CEB7A4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		86D58C472E7021C3001AADDE /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -48,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				86D58C482E7021C3001AADDE /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				7D9CFA4128DDEE7F00D971A7 /* Image Feed */,
+				86D58C462E7021C3001AADDE /* Frameworks */,
 				7D9CFA4028DDEE7F00D971A7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -115,6 +119,14 @@
 				867F69F12E6641B300D6E714 /* ProfileViewController.swift */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		86D58C462E7021C3001AADDE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				86D58C472E7021C3001AADDE /* WebKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -348,7 +360,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = MMN6UYTPS7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Image Feed/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -362,7 +374,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ru.praktikum.Image-Feed";
+				PRODUCT_BUNDLE_IDENTIFIER = "ru.praktikum.maskaykin.Image-Feed";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -377,7 +389,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = MMN6UYTPS7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Image Feed/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

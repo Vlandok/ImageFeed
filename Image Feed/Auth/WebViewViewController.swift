@@ -3,8 +3,8 @@ import UIKit
 
 final class WebViewViewController : UIViewController, WKNavigationDelegate {
     
-    @IBOutlet weak var webView: WKWebView!
-    @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet private weak var webView: WKWebView!
+    @IBOutlet private weak var progressView: UIProgressView!
     
     weak var delegate: WebViewViewControllerDelegate?
     
