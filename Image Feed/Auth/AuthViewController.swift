@@ -1,4 +1,5 @@
 import UIKit
+import ProgressHUD
 
 final class AuthViewController : UIViewController, WebViewViewControllerDelegate {
     
@@ -26,7 +27,9 @@ final class AuthViewController : UIViewController, WebViewViewControllerDelegate
     }
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        UIBlockingProgressHUD.show()
         OAuth2Service.shared.fetchOAuthToken(code) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
             guard let self = self else { return }
             
             switch result {
@@ -35,8 +38,7 @@ final class AuthViewController : UIViewController, WebViewViewControllerDelegate
                 self.delegate?.didAuthenticate(self)
             case .failure(let error):
                 print("[AuthViewController] Ошибка получения токена: \(error)")
-                // TODO: Показать ошибку пользователю
-                vc.dismiss(animated: true)
+                self.showAlert()
             }
         }
     }
@@ -51,6 +53,16 @@ final class AuthViewController : UIViewController, WebViewViewControllerDelegate
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(resource: .ypBlack)
+    }
+    
+    private func showAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Ок", style: .default))
+        present(alert, animated: true)
     }
     
 }
