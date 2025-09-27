@@ -1,13 +1,20 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
-    private let photoProfile: UIImageView = {
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
+    private let defaultAvatarImage: UIImage? = {
+        let avatar = UIImage(named:"avatar_placeholder")?
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
+        return avatar
+    }()
+    
+    private lazy var photoProfile: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.image = UIImage(named: "avatar")
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 35
+        imageView.image = defaultAvatarImage
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -16,7 +23,6 @@ final class ProfileViewController: UIViewController {
         let label = UILabel()
         label.textColor = .white
         label.font = UIFont.systemFont(ofSize: 23, weight: .bold)
-        label.text = "Имя пользователя"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -25,7 +31,6 @@ final class ProfileViewController: UIViewController {
         let label = UILabel()
         label.textColor = .gray
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        label.text = "@nickname"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -35,7 +40,6 @@ final class ProfileViewController: UIViewController {
         label.textColor = .white
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         label.numberOfLines = 0
-        label.text = "Описание профиля"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -52,6 +56,19 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
+        if let profile = ProfileService.shared.profile {
+            updateProfileDetails(profile: profile)
+        }
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
     }
     
     private func setupUI() {
@@ -103,6 +120,50 @@ final class ProfileViewController: UIViewController {
                 exitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
                 exitButton.widthAnchor.constraint(equalToConstant: 44),
                 exitButton.heightAnchor.constraint(equalToConstant: 44)]
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        
+        print("imageUrl: \(url)")
+        
+        let processor = RoundCornerImageProcessor(cornerRadius: 35)
+        photoProfile.kf.indicatorType = .activity
+        photoProfile.kf.setImage(
+            with: url,
+            placeholder: defaultAvatarImage,
+            options: [
+                .processor(processor),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage,
+                .forceRefresh
+            ]) { result in
+                
+                switch result {
+                case .success(let value):
+                    print(value.image)
+                    print(value.cacheType)
+                    print(value.source)
+                    
+                case .failure(let error):
+                    print(error)
+                }
+            }
+    }
+    
+    private func updateProfileDetails(profile: Profile) {
+        userName.text = profile.name.isEmpty
+        ? "Имя не указано"
+        : profile.name
+        userNickName.text = profile.loginName.isEmpty
+        ? "@неизвестный_пользователь"
+        : profile.loginName
+        descriptionProfile.text = (profile.bio?.isEmpty ?? true)
+        ? "Профиль не заполнен"
+        : profile.bio
     }
     
     @objc private func exitButtonTapped() {

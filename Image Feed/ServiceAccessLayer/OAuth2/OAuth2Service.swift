@@ -3,13 +3,22 @@ import Foundation
 final class OAuth2Service {
     static let shared = OAuth2Service()
     
-    private var decoder: JSONDecoder {
-        return JSONDecoder()
-    }
+    private var task: URLSessionTask?
+
+    private var lastCode: String?
+    
     
     private init() { }
     
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        guard lastCode != code else {
+            completion(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+
+        task?.cancel()
+        lastCode = code
         let request = makeOAuthTokenRequest(code: code)
         guard let request = request else {
             let error = NSError(domain: "Invalid URL", code: 0, userInfo: nil)
@@ -20,29 +29,22 @@ final class OAuth2Service {
             return
         }
         
-        let task = URLSession.shared.data(for: request) { result in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+            guard let self else { return }
+            
             switch result {
-            case .success(let data):
-                do {
-                    let oauthTokenResponse = try self.decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    OAuth2TokenStorage.shared.token = oauthTokenResponse.accessToken
-                    print("[OAuth2Service] Токен успешно получен и сохранен")
-                    DispatchQueue.main.async {
-                        completion(.success(oauthTokenResponse.accessToken))
-                    }
-                } catch {
-                    print("[OAuth2Service] Ошибка декодирования ответа: \(error)")
-                    DispatchQueue.main.async {
-                        completion(.failure(error))
-                    }
-                }
+            case .success(let oauthTokenResponse):
+                OAuth2TokenStorage.shared.token = oauthTokenResponse.accessToken
+                print("[OAuth2Service] Токен успешно получен и сохранен")
+                self.task = nil
+                self.lastCode = nil
+                completion(.success(oauthTokenResponse.accessToken))
             case .failure(let error):
-                print("[OAuth2Service] Сетевая ошибка: \(error)")
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                print("[OAuth2Service] Ошибка получения токена: \(error)")
+                completion(.failure(error))
             }
         }
+        self.task = task
         task.resume()
     }
     
