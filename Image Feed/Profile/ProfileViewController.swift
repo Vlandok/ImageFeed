@@ -5,8 +5,8 @@ final class ProfileViewController: UIViewController {
     
     private var profileImageServiceObserver: NSObjectProtocol?
     
-    private let defaultAvatarImage: UIImage? = {
-        let avatar = UIImage(named:"avatar_placeholder")?
+    private let defaultAvatarImage: UIImage = {
+        let avatar = UIImage(resource: .avatarPlaceholder)
             .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
         return avatar
     }()
@@ -46,7 +46,7 @@ final class ProfileViewController: UIViewController {
     
     private let exitButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(UIImage(named: "logout_button"), for: .normal)
+        button.setImage(UIImage(resource: .logoutButton), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -72,7 +72,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = UIColor(named: "yp_black")
+        view.backgroundColor = UIColor(resource: .ypBlack)
         view.addSubview(photoProfile)
         view.addSubview(userName)
         view.addSubview(userNickName)
@@ -167,7 +167,16 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func exitButtonTapped() {
-        dismiss(animated: true)
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Да", style: .destructive, handler: { _ in
+            ProfileLogoutService.shared.logout()
+        }))
+        present(alert, animated: true)
     }
     
 }
