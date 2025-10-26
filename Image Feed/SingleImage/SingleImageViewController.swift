@@ -1,6 +1,8 @@
 import UIKit
+import Kingfisher
 
 final class SingleImageViewController: UIViewController {
+    var fullImageURL: URL?
     var image: UIImage? {
         didSet {
             guard isViewLoaded, let image else { return }
@@ -19,10 +21,13 @@ final class SingleImageViewController: UIViewController {
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
 
-        guard let image else { return }
-        imageView.image = image
-        imageView.frame.size = image.size
-        rescaleAndCenterImageInScrollView(image: image)
+        if let url = fullImageURL {
+            loadFullImage(from: url)
+        } else if let image {
+            imageView.image = image
+            imageView.frame.size = image.size
+            rescaleAndCenterImageInScrollView(image: image)
+        }
     }
 
     @IBAction private func didTapBackButton() {
@@ -53,6 +58,39 @@ final class SingleImageViewController: UIViewController {
         let x = (newContentSize.width - visibleRectSize.width) / 2
         let y = (newContentSize.height - visibleRectSize.height) / 2
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
+    }
+}
+
+private extension SingleImageViewController {
+    func loadFullImage(from url: URL) {
+        UIBlockingProgressHUD.show()
+        imageView.kf.indicatorType = .activity
+        imageView.kf.setImage(with: url) { [weak self] result in
+            guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
+            switch result {
+            case .success(let imageResult):
+                self.imageView.image = imageResult.image
+                self.imageView.frame.size = imageResult.image.size
+                self.rescaleAndCenterImageInScrollView(image: imageResult.image)
+            case .failure:
+                self.showError(url: url)
+            }
+        }
+    }
+
+    func showError(url: URL) {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Попробовать ещё раз?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Не надо", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default, handler: { [weak self] _ in
+            guard let self = self else { return }
+            self.loadFullImage(from: url)
+        }))
+        present(alert, animated: true)
     }
 }
 
