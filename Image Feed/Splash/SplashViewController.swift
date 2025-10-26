@@ -3,7 +3,7 @@ import UIKit
 final class SplashViewController: UIViewController, AuthViewControllerDelegate {
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     
-    private let profileService = ProfileService.shared
+    private let profileService = ProfileServiceImpl.shared
     
     private var imageView: UIImageView!
     
@@ -78,7 +78,7 @@ final class SplashViewController: UIViewController, AuthViewControllerDelegate {
             
             switch result {
             case let .success(profile):
-                ProfileImageService.shared.fetchProfileImageURL(username: profile.username) { _ in }
+                ProfileImageServiceImpl.shared.fetchProfileImageURL(username: profile.username) { _ in }
             case let .failure(error):
                 print(error)
                 break

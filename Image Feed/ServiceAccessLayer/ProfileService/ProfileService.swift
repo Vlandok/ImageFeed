@@ -21,8 +21,12 @@ struct ProfileResult: Codable {
     }
 }
 
-final class ProfileService {
-    static let shared = ProfileService()
+protocol ProfileService {
+    var profile: Profile? { get }
+}
+
+final class ProfileServiceImpl: ProfileService {
+    static let shared = ProfileServiceImpl()
     private init() {}
 
     private var task: URLSessionTask?

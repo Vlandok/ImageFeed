@@ -119,7 +119,7 @@
         <!--Single Image-->
         <scene sceneID="Mjq-2y-Q4d">
             <objects>
-                <viewController title="Single Image" modalPresentationStyle="fullScreen" id="9Sf-7m-1fj" customClass="SingleImageViewController" customModule="Image_Feed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SingleImageViewController" title="Single Image" modalPresentationStyle="fullScreen" id="9Sf-7m-1fj" customClass="SingleImageViewController" customModule="Image_Feed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="AcK-Sb-gt3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -237,7 +237,7 @@
         <!--Web View View Controller-->
         <scene sceneID="Veh-Ac-5an">
             <objects>
-                <viewController id="8jB-cy-gCF" customClass="WebViewViewController" customModule="Image_Feed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="8jB-cy-gCF" customClass="WebViewViewController" customModule="Image_Feed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Pvv-EW-fQq">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

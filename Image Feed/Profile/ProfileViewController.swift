@@ -1,9 +1,17 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+public protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfilePresenterProtocol? { get set }
+    func initUiScreen()
+    func setProfile(profile: ProfileUiModel)
+    func setAvatar(url: String)
+    func showLogoutAlert(onConfirm: @escaping () -> Void)
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     
-    private var profileImageServiceObserver: NSObjectProtocol?
+    var presenter: ProfilePresenterProtocol?
     
     private let defaultAvatarImage: UIImage = {
         let avatar = UIImage(resource: .avatarPlaceholder)
@@ -51,24 +59,14 @@ final class ProfileViewController: UIViewController {
         return button
     }()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter?.viewDidLoad()
+    }
+    
+    func initUiScreen() {
         setupUI()
         setupConstraints()
-        if let profile = ProfileService.shared.profile {
-            updateProfileDetails(profile: profile)
-        }
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        updateAvatar()
     }
     
     private func setupUI() {
@@ -122,14 +120,17 @@ final class ProfileViewController: UIViewController {
                 exitButton.heightAnchor.constraint(equalToConstant: 44)]
     }
     
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
-        else { return }
-        
-        print("imageUrl: \(url)")
-        
+    func setProfile(profile: ProfileUiModel) {
+        userName.text = profile.nameText
+        userNickName.text = profile.loginText
+        descriptionProfile.text = profile.bioText
+        if let url = profile.avatarURL {
+            setAvatar(url: url)
+        }
+    }
+    
+    func setAvatar(url: String) {
+        guard let url = URL(string: url) else { return }
         let processor = RoundCornerImageProcessor(cornerRadius: 35)
         photoProfile.kf.indicatorType = .activity
         photoProfile.kf.setImage(
@@ -140,33 +141,10 @@ final class ProfileViewController: UIViewController {
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage,
                 .forceRefresh
-            ]) { result in
-                
-                switch result {
-                case .success(let value):
-                    print(value.image)
-                    print(value.cacheType)
-                    print(value.source)
-                    
-                case .failure(let error):
-                    print(error)
-                }
-            }
+            ])
     }
     
-    private func updateProfileDetails(profile: Profile) {
-        userName.text = profile.name.isEmpty
-        ? "Имя не указано"
-        : profile.name
-        userNickName.text = profile.loginName.isEmpty
-        ? "@неизвестный_пользователь"
-        : profile.loginName
-        descriptionProfile.text = (profile.bio?.isEmpty ?? true)
-        ? "Профиль не заполнен"
-        : profile.bio
-    }
-    
-    @objc private func exitButtonTapped() {
+    func showLogoutAlert(onConfirm: @escaping () -> Void) {
         let alert = UIAlertController(
             title: "Пока, пока!",
             message: "Уверены, что хотите выйти?",
@@ -174,9 +152,12 @@ final class ProfileViewController: UIViewController {
         )
         alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
         alert.addAction(UIAlertAction(title: "Да", style: .destructive, handler: { _ in
-            ProfileLogoutService.shared.logout()
+            onConfirm()
         }))
         present(alert, animated: true)
     }
     
+    @objc private func exitButtonTapped() {
+        presenter?.didTapLogout()
+    }
 }
