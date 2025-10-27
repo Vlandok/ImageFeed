@@ -29,6 +29,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     
     private let userName: UILabel = {
         let label = UILabel()
+        label.accessibilityIdentifier = "userNameLabel"
         label.textColor = .white
         label.font = UIFont.systemFont(ofSize: 23, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -37,6 +38,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     
     private let userNickName: UILabel = {
         let label = UILabel()
+        label.accessibilityIdentifier = "userNickLabel"
         label.textColor = .gray
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -54,6 +56,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     
     private let exitButton: UIButton = {
         let button = UIButton(type: .custom)
+        button.accessibilityIdentifier = "logoutButton"
         button.setImage(UIImage(resource: .logoutButton), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
