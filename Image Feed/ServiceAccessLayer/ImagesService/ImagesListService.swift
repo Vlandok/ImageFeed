@@ -1,7 +1,14 @@
 import Foundation
 
-final class ImagesListService {
-    static let shared = ImagesListService()
+protocol ImagesListService: AnyObject {
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void)
+}
+
+
+final class ImagesListServiceImpl: ImagesListService {
+    static let shared = ImagesListServiceImpl()
 
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
 
@@ -38,7 +45,7 @@ final class ImagesListService {
                         self.photos.append(contentsOf: newPhotos)
                         self.lastLoadedPage = nextPage
                         self.isLoading = false
-                        NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self)
+                        NotificationCenter.default.post(name: ImagesListServiceImpl.didChangeNotification, object: self)
                     }
                 } catch {
                     print("[ImagesListService] Decoding error: \(error)")
@@ -79,7 +86,7 @@ final class ImagesListService {
                         isLiked: !photo.isLiked
                     )
                     self.photos[index] = newPhoto
-                    NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self)
+                    NotificationCenter.default.post(name: ImagesListServiceImpl.didChangeNotification, object: self)
                 }
                 completion(.success(()))
             case .failure(let error):

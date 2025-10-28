@@ -2,8 +2,12 @@ import Foundation
 import WebKit
 import UIKit
 
-final class ProfileLogoutService {
-    static let shared = ProfileLogoutService()
+protocol ProfileLogoutService {
+    func logout()
+}
+
+final class ProfileLogoutServiceImpl: ProfileLogoutService {
+    static let shared = ProfileLogoutServiceImpl()
     
     private init() { }
     
@@ -28,9 +32,9 @@ final class ProfileLogoutService {
     }
     
     private func resetServices() {
-        ProfileService.shared.reset()
-        ProfileImageService.shared.reset()
-        ImagesListService.shared.reset()
+        ProfileServiceImpl.shared.reset()
+        ProfileImageServiceImpl.shared.reset()
+        ImagesListServiceImpl.shared.reset()
     }
     
     private func switchToSplash() {
